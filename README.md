@@ -6,7 +6,7 @@ compliance information in the mining and explosion-protection industry.
 
 > **Development status:** The repository is being established incrementally.
 > The pnpm workspace and initial PostgreSQL/Prisma foundation are in place.
-> The NestJS API foundation is in place. The web application, authentication,
+> The NestJS API and a Next.js dashboard preview are in place. Authentication
 > and domain workflows have not been implemented.
 
 ## Planned workspace
@@ -43,9 +43,10 @@ Install workspace dependencies from the repository root:
 pnpm install
 ```
 
-The API is runnable; the web application is not yet implemented. The `dev`,
-`build`, `lint`, `test`, and `typecheck` workspace scripts will run the
-corresponding scripts in packages as they are added.
+The API and web preview are runnable. Dashboard figures and equipment
+records are illustrative only; they are not connected to the API. The root
+`dev`, `build`, `lint`, `test`, and `typecheck` scripts run corresponding
+workspace scripts where available.
 
 ### Start PostgreSQL
 
@@ -84,6 +85,18 @@ Interactive OpenAPI documentation is available at `/docs`.
 The readiness endpoint returns `503 Service Unavailable` if PostgreSQL cannot
 be reached. The liveness endpoint does not depend on the database.
 
+### Run the web preview
+
+In another terminal:
+
+```sh
+pnpm --filter @minecert/web dev
+```
+
+Open `http://localhost:3000`. This is a responsive dashboard shell using
+explicitly illustrative sample data. Search and notifications are not yet
+implemented, and no authentication or business operations are connected.
+
 ## Planned foundation milestones
 
 1. Establish the pnpm workspace and shared tooling. **Complete.**
@@ -91,7 +104,7 @@ be reached. The liveness endpoint does not depend on the database.
    initial foundation entities. **Complete.**
 3. Add the NestJS API, configuration validation, health endpoint, and
    OpenAPI documentation. **Complete.**
-4. Add the Next.js landing/dashboard shell.
+4. Add the Next.js landing/dashboard shell. **Complete (illustrative preview).**
 5. Add setup, architecture, API, database, product, and decision
    documentation, then verify the complete workspace.
 
@@ -127,3 +140,11 @@ global DTO validation, and publishes versioned REST routes under `/api/v1`.
 Swagger UI and its OpenAPI document are served at `/docs` and `/docs-json`.
 Only liveness and database-readiness routes are implemented; authentication,
 authorization, and domain endpoints remain planned.
+
+## Web preview
+
+The Next.js App Router application provides a responsive, Tailwind-enabled
+workspace dashboard shell. The displayed organization, user, equipment,
+certificate, and activity details are sample content only. The web app does
+not yet call the API or perform equipment, document, certificate, or
+inspection operations.
