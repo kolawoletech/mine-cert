@@ -72,7 +72,7 @@ Never commit `.env` or other files containing credentials.
 
 1. Establish the pnpm workspace and shared tooling. **Complete.**
 2. Add PostgreSQL with Docker Compose and a Prisma schema/migration for the
-   initial foundation entities. **In progress.**
+   initial foundation entities. **Complete.**
 3. Add the NestJS API, configuration validation, health endpoint, and
    OpenAPI documentation.
 4. Add the Next.js landing/dashboard shell.
@@ -81,3 +81,25 @@ Never commit `.env` or other files containing credentials.
 
 These are planned milestones, not claims that the functionality is already
 available.
+
+## Database foundation
+
+The initial Prisma migration establishes organizations, users and
+memberships, global role/permission definitions, organization-scoped
+equipment, shared equipment-type and manufacturer catalogs, laboratory-issued
+certificates with revisions, and organization-owned documents with version
+records. Equipment-to-certificate and equipment-to-document links
+are represented explicitly.
+
+Reference catalogs and role/permission definitions are global in this
+foundation; organization-specific role definitions are not yet supported.
+The schema provides tenant ownership and unique equipment identifiers within
+an organization. API services must still scope every operation to the
+authenticated organization and validate cross-organization links; the schema
+does not replace backend authorization. Certificate and document revisions
+are history records; write paths must append revisions rather than mutate
+published history.
+
+The local database listens on port `5435` by default to avoid conflicts with
+other local PostgreSQL installations. Override `POSTGRES_PORT` in `.env` if
+needed.
