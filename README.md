@@ -6,8 +6,9 @@ compliance information in the mining and explosion-protection industry.
 
 > **Development status:** The repository is being established incrementally.
 > The pnpm workspace and initial PostgreSQL/Prisma foundation are in place.
-> The NestJS API and a Next.js dashboard preview are in place. Authentication
-> and domain workflows have not been implemented.
+> The NestJS API, Next.js dashboard preview, and configurable OIDC sign-in
+> foundation are in place. Tenant authorization and domain workflows have
+> not been implemented.
 
 ## Planned workspace
 
@@ -93,9 +94,27 @@ In another terminal:
 pnpm --filter @minecert/web dev
 ```
 
-Open `http://localhost:3000`. This is a responsive dashboard shell using
-explicitly illustrative sample data. Search and notifications are not yet
-implemented, and no authentication or business operations are connected.
+Open `http://localhost:3000`. The responsive dashboard uses illustrative
+sample data. Search, notifications, tenant authorization, and business
+operations are not yet implemented.
+
+### Configure OIDC sign-in
+
+The web app supports a standards-based OIDC provider. Set
+`AUTH_OIDC_ISSUER`, `AUTH_OIDC_CLIENT_ID`, `AUTH_OIDC_CLIENT_SECRET`, and a
+random `AUTH_SECRET` of at least 32 bytes in the root `.env`. For a local
+development secret, generate one with:
+
+```sh
+node -e "console.log(require('node:crypto').randomBytes(32).toString('base64url'))"
+```
+
+Register `http://localhost:3000/api/auth/callback/minecert-oidc` as the
+provider callback URL. The provider must return an explicit
+`email_verified: true` claim. Sign-in is available at `/sign-in`; verified
+OIDC identities are stored separately from MineCert users. OIDC sign-in does
+not grant organisation membership or access to tenant data. The API
+authorization guard is a subsequent milestone.
 
 ## Planned foundation milestones
 
@@ -105,7 +124,10 @@ implemented, and no authentication or business operations are connected.
 3. Add the NestJS API, configuration validation, health endpoint, and
    OpenAPI documentation. **Complete.**
 4. Add the Next.js landing/dashboard shell. **Complete (illustrative preview).**
-5. Add setup, architecture, API, database, product, and decision
+5. Add configurable OIDC sign-in and verified identity linking. **Complete.**
+6. Add backend-enforced organisation membership and permissions.
+7. Implement equipment registration end-to-end.
+8. Add setup, architecture, API, database, product, and decision
    documentation, then verify the complete workspace.
 
 These are planned milestones, not claims that the functionality is already
@@ -138,13 +160,16 @@ needed.
 The API validates `DATABASE_URL`, `NODE_ENV`, and `PORT` at startup, applies
 global DTO validation, and publishes versioned REST routes under `/api/v1`.
 Swagger UI and its OpenAPI document are served at `/docs` and `/docs-json`.
-Only liveness and database-readiness routes are implemented; authentication,
-authorization, and domain endpoints remain planned.
+Only liveness and database-readiness routes are implemented. OIDC sign-in is
+available in the web app, but API authentication, organisation authorization,
+and domain endpoints remain planned.
 
 ## Web preview
 
 The Next.js App Router application provides a responsive, Tailwind-enabled
-workspace dashboard shell. The displayed organization, user, equipment,
-certificate, and activity details are sample content only. The web app does
-not yet call the API or perform equipment, document, certificate, or
-inspection operations.
+workspace dashboard shell. The displayed organisation, user, equipment,
+certificate, and activity details are sample content only. Auth.js supports a
+configurable OIDC provider and records verified external identities. The web
+app does not yet call the API or perform equipment, document, certificate,
+or inspection operations; API-level authentication and tenant authorization
+are still required before exposing business data.

@@ -355,6 +355,16 @@ button {
   gap: 13px;
 }
 
+.signin-link {
+  color: #536b57;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.signin-link:hover {
+  color: #254333;
+}
+
 .environment-tag {
   display: inline-flex;
   align-items: center;

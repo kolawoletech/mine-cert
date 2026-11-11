@@ -275,6 +275,9 @@ export default function Home() {
             <strong>Overview</strong>
           </div>
           <div className="topbar-actions">
+            <a className="signin-link" href="/sign-in">
+              Sign in
+            </a>
             <span className="environment-tag">
               <span className="environment-dot" />
               DEMO WORKSPACE
