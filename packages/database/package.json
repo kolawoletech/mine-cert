@@ -2,6 +2,12 @@
   "name": "@minecert/database",
   "version": "0.1.0",
   "private": true,
+  "exports": {
+    "./client": {
+      "types": "./client.d.ts",
+      "default": "./client.js"
+    }
+  },
   "scripts": {
     "db:generate": "dotenv -e ../../.env -- prisma generate",
     "db:migrate": "dotenv -e ../../.env -- prisma migrate dev",

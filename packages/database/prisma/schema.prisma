@@ -37,18 +37,19 @@ enum DocumentCategory {
   OTHER
 }
 
-model Organization {
+model Organisation {
   id                   String                  @id @default(cuid())
   name                 String
   slug                 String                  @unique
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @updatedAt
-  memberships          OrganizationMembership[]
+  memberships          OrganisationMembership[]
   equipment            Equipment[]
   issuedCertificates   Certificate[]           @relation("CertificateIssuer")
   documents            Document[]
 
   @@index([name])
+  @@map("Organization")
 }
 
 model User {
@@ -57,24 +58,25 @@ model User {
   name                 String?
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @updatedAt
-  memberships          OrganizationMembership[]
+  memberships          OrganisationMembership[]
   uploadedVersions     DocumentVersion[]       @relation("DocumentVersionUploader")
 }
 
-model OrganizationMembership {
+model OrganisationMembership {
   id             String           @id @default(cuid())
-  organizationId String
+  organisationId String @map("organizationId")
   userId         String
   status         MembershipStatus @default(INVITED)
   joinedAt       DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  organisation   Organisation     @relation(fields: [organisationId], references: [id], onDelete: Restrict, map: "OrganizationMembership_organizationId_fkey")
   user           User             @relation(fields: [userId], references: [id], onDelete: Restrict)
   roleAssignments MembershipRole[]
 
-  @@unique([organizationId, userId])
-  @@index([userId, status])
+  @@unique([organisationId, userId], map: "OrganizationMembership_organizationId_userId_key")
+  @@index([userId, status], map: "OrganizationMembership_userId_status_idx")
+  @@map("OrganizationMembership")
 }
 
 model Role {
@@ -108,7 +110,7 @@ model RolePermission {
 model MembershipRole {
   membershipId String
   roleId       String
-  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  membership   OrganisationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade, map: "MembershipRole_membershipId_fkey")
   role         Role                   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([membershipId, roleId])
@@ -135,7 +137,7 @@ model Manufacturer {
 
 model Equipment {
   id               String                 @id @default(cuid())
-  organizationId   String
+  organisationId   String @map("organizationId")
   equipmentTypeId  String
   manufacturerId   String?
   equipmentIdentifier String
@@ -145,32 +147,32 @@ model Equipment {
   status           EquipmentStatus        @default(ACTIVE)
   createdAt        DateTime               @default(now())
   updatedAt        DateTime               @updatedAt
-  organization     Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  organisation     Organisation           @relation(fields: [organisationId], references: [id], onDelete: Restrict, map: "Equipment_organizationId_fkey")
   equipmentType    EquipmentType          @relation(fields: [equipmentTypeId], references: [id], onDelete: Restrict)
   manufacturer     Manufacturer?          @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
   certificates     EquipmentCertificate[]
   documents        EquipmentDocument[]
 
-  @@unique([organizationId, equipmentIdentifier])
-  @@unique([organizationId, slotNumber])
-  @@index([organizationId, status])
+  @@unique([organisationId, equipmentIdentifier], map: "Equipment_organizationId_equipmentIdentifier_key")
+  @@unique([organisationId, slotNumber], map: "Equipment_organizationId_slotNumber_key")
+  @@index([organisationId, status], map: "Equipment_organizationId_status_idx")
   @@index([serialNumber])
 }
 
 model Certificate {
   id                   String                 @id @default(cuid())
-  issuerOrganizationId String
+  issuerOrganisationId String @map("issuerOrganizationId")
   certificateNumber    String
   status               CertificateStatus      @default(DRAFT)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
-  issuer               Organization           @relation("CertificateIssuer", fields: [issuerOrganizationId], references: [id], onDelete: Restrict)
+  issuer               Organisation           @relation("CertificateIssuer", fields: [issuerOrganisationId], references: [id], onDelete: Restrict, map: "Certificate_issuerOrganizationId_fkey")
   revisions            CertificateRevision[]
   equipment            EquipmentCertificate[]
   documents            CertificateDocument[]
 
-  @@unique([issuerOrganizationId, certificateNumber])
-  @@index([issuerOrganizationId, status])
+  @@unique([issuerOrganisationId, certificateNumber], map: "Certificate_issuerOrganizationId_certificateNumber_key")
+  @@index([issuerOrganisationId, status], map: "Certificate_issuerOrganizationId_status_idx")
 }
 
 model CertificateRevision {
@@ -201,17 +203,18 @@ model EquipmentCertificate {
 
 model Document {
   id                    String               @id @default(cuid())
-  organizationId        String
+  organisationId        String @map("organizationId")
   title                 String
   category              DocumentCategory     @default(OTHER)
   createdAt             DateTime             @default(now())
   updatedAt             DateTime             @updatedAt
-  organization          Organization         @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  organisation          Organisation         @relation(fields: [organisationId], references: [id], onDelete: Restrict, map: "Document_organizationId_fkey")
   versions              DocumentVersion[]
   equipment             EquipmentDocument[]
   certificates          CertificateDocument[]
 
-  @@index([organizationId, category])
+  @@index([organisationId, category], map: "Document_organizationId_category_idx")
+  @@map("Document")
 }
 
 model DocumentVersion {
